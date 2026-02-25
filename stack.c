@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Errors
+#define STACK_NOT_CREATED 0
+#define ALLOCATION_FAIL 1
+#define OUT_OF_MEMORY 2
+#define EMPTY_STACK 3
+
 static const char *errmsg[] = {
     "Stack is not created.",
     "Unable to allocate memory.",
@@ -9,6 +15,7 @@ static const char *errmsg[] = {
     "Unable to pop, stack is empty."
 };
 
+// Stack structure
 struct Stack {
     mydata *data;
     size_t size;
@@ -16,6 +23,7 @@ struct Stack {
     bool created;
 };
 
+// All functions
 static int ensure_capacity(Stack *stack, size_t need)
 {
     if (stack->capacity >= need) return 0;
@@ -35,7 +43,7 @@ Stack* createStack(void)
 {
     Stack *stack = (Stack*)malloc(sizeof(Stack));
     if (!stack) {
-        fprintf(stderr, "Error: %s\n", errmsg[1]);
+        fprintf(stderr, "Error: %s\n", errmsg[ALLOCATION_FAIL]);
         return NULL;
     }
 
@@ -43,7 +51,7 @@ Stack* createStack(void)
     stack->capacity = 4; /* pradine talpa */
     stack->data = (mydata*)malloc(stack->capacity * sizeof(mydata));
     if (!stack->data) {
-        fprintf(stderr, "Error: %s\n", errmsg[1]);
+        fprintf(stderr, "Error: %s\n", errmsg[ALLOCATION_FAIL]);
         free(stack);
         return NULL;
     }
@@ -55,12 +63,12 @@ Stack* createStack(void)
 int push(Stack *stack, mydata data)
 {
     if (stack == NULL || !stack->created) {
-        fprintf(stderr, "Error: %s\n", errmsg[0]);
+        fprintf(stderr, "Error: %s\n", errmsg[STACK_NOT_CREATED]);
         return 1;
     }
 
     if (ensure_capacity(stack, stack->size + 1) != 0) {
-        fprintf(stderr, "Error: %s\n", errmsg[2]);
+        fprintf(stderr, "Error: %s\n", errmsg[OUT_OF_MEMORY]);
         return 1;
     }
 
@@ -71,12 +79,12 @@ int push(Stack *stack, mydata data)
 int pop(Stack *stack, mydata *data)
 {
     if (stack == NULL || !stack->created) {
-        fprintf(stderr, "Error: %s\n", errmsg[0]);
+        fprintf(stderr, "Error: %s\n", errmsg[STACK_NOT_CREATED]);
         return 1;
     }
 
     if (stack->size == 0) {
-        fprintf(stderr, "Error: %s\n", errmsg[3]);
+        fprintf(stderr, "Error: %s\n", errmsg[EMPTY_STACK]);
         return 1;
     }
 
@@ -88,7 +96,7 @@ int pop(Stack *stack, mydata *data)
 bool isEmpty(Stack *stack)
 {
     if (stack == NULL || !stack->created) {
-        fprintf(stderr, "Error: %s\n", errmsg[0]);
+        fprintf(stderr, "Error: %s\n", errmsg[STACK_NOT_CREATED]);
         return false;
     }
     return stack->size == 0;
@@ -97,7 +105,7 @@ bool isEmpty(Stack *stack)
 bool isFull(Stack *stack)
 {
     if (stack == NULL || !stack->created) {
-        fprintf(stderr, "Error: %s\n", errmsg[0]);
+        fprintf(stderr, "Error: %s\n", errmsg[STACK_NOT_CREATED]);
         return false;
     }
     return stack->size == stack->capacity;
@@ -106,7 +114,7 @@ bool isFull(Stack *stack)
 void destroyStack(Stack **stack)
 {
     if (stack == NULL || *stack == NULL || !(*stack)->created) {
-        fprintf(stderr, "Error: %s\n", errmsg[0]);
+        fprintf(stderr, "Error: %s\n", errmsg[STACK_NOT_CREATED]);
         return;
     }
 
